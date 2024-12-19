@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML Assignment 4</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="container">
+        <h1 class="ele">Diabetes Type Classification</h1><br><br>
+        <form id="predict">
+            <label for="glucose">Glucose</label>
+            <input type="text" id="glucose" placeholder="Enter glucose level" required class="ele"><br>
+            <label for="insulin">Insulin</label>
+            <input type="text" id="insulin" placeholder="Enter insulin level" required class="ele"><br>
+            <label for="bmi">BMI</label>
+            <input type="text" id="bmi" placeholder="Enter BMI" required class="ele"><br>
+            <label for="age">Age</label>
+            <input type="text" id="age" placeholder="Enter age" required class="ele"><br>
+            <label for="model_type" class="ele">Model Type:</label>
+            <select id="model_type" name="model_type" required>
+                <option value="naive_bayes" class="ele">Naive Bayes</option>
+                <option value="perceptron" class="ele">Perceptron</option>
+            </select><br><br><br><br>
+            <button type="submit" onclick="predict()" class="ele">Submit</button>
+        </form>
+    <h3 id="result1" class="ele"></h3>
+    <p id="result2" class="ele"></p>
+    </div>
+
+    <script>
+        
+        document.getElementById('predict').addEventListener('submit', function(event) {
+            event.preventDefault();
+        });
+
+        async function predict() {
+
+            const glucose = document.getElementById("glucose").value;
+            const insulin = document.getElementById("insulin").value;
+            const bmi = document.getElementById("bmi").value;
+            const age = document.getElementById("age").value;
+            const modelType = document.getElementById("model_type").value;
+
+            const data = {
+                age: Number(age),
+                glucose: Number(glucose),
+                insulin: Number(insulin),
+                bmi: Number(bmi),
+                model_type: modelType
+            };
+
+            try {
+                const response = await fetch("http://127.0.0.1:5000/predict", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(data)
+                });
+                if (response.ok) {
+                    const result = await response.json();
+                    document.getElementById("result1").innerText = "Prediction Result:"
+                    document.getElementById("result2").innerText = `Diabetes Type: ${result.diabetes_type}`;
+                    console.log(result.diabetes_type);
+                } else {
+                    document.getElementById("result").innerText = "Error";
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                document.getElementById("result").innerText = "Error";
+            }
+        }
+
+    </script>
+
+</body>
+
+</html>
